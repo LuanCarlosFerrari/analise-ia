@@ -13,14 +13,14 @@
             <div class="input-area">
                 <div class="image-upload">
                     <label for="imageInput">Selecione uma imagem:</label>
-                    <input type="file" id="imageInput" accept="image/*">
+                    <input type="file" id="imageInput" accept="image/*" multiple>
                     <div id="imagePreview" class="image-preview"></div>
                 </div>
 
                 <label for="prompt">Prompt (opcional):</label>
                 <textarea id="prompt" placeholder="Digite instruções específicas para análise da imagem...">Descreva detalhadamente esta imagem</textarea>
                 
-                <button onclick="analyzeImage()">Analisar Imagem</button>
+                <button onclick="analyzeImages()">Analisar Imagens</button>
             </div>
         </div>
         
