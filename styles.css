@@ -1,0 +1,230 @@
+/* Reset e configurações base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    height: 100vh; /* Força altura total */
+    display: flex;
+    overflow: hidden; /* Previne scroll na página */
+}
+
+/* Container principal em tela cheia */
+.grid-container {
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0; /* Remove espaço entre painéis */
+    margin: 0;
+    padding: 0;
+}
+
+/* Painéis laterais */
+.left-panel, .right-panel {
+    height: 100vh;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 20px;
+    position: relative;
+}
+
+/* Adiciona uma sombra sutil entre os painéis */
+.right-panel {
+    box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+}
+
+/* Cabeçalhos */
+h1 {
+    color: #333;
+    font-size: clamp(1.5rem, 2vw, 2rem);
+    margin-bottom: 20px;
+    flex-shrink: 0;
+}
+
+/* Área de entrada */
+.input-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Labels e inputs */
+label {
+    color: #333;
+    font-weight: bold;
+    font-size: clamp(0.875rem, 1.5vw, 1rem);
+}
+
+input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Preview da imagem */
+.image-upload {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.image-preview {
+    flex: 1;
+    border: 2px dashed #ddd;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+.image-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Área de texto */
+textarea {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+    font-size: clamp(0.875rem, 1.5vw, 1rem);
+}
+
+/* Botão */
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: clamp(10px, 1.5vh, 15px);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: clamp(0.875rem, 1.5vw, 1rem);
+    transition: background-color 0.3s;
+    margin-top: 15px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+/* Área de resultado */
+#result {
+    flex: 1;
+    overflow-y: auto;
+    height: calc(100vh - 80px); /* Altura total menos o cabeçalho */
+}
+
+.result-box {
+    background-color: #f8f8f8;
+    padding: 20px;
+    border-radius: 8px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.result-box pre {
+    white-space: pre-wrap;
+    font-size: clamp(0.875rem, 1.5vw, 1rem);
+}
+
+/* Estados de feedback */
+.error {
+    color: #dc3545;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #ffe6e6;
+}
+
+.success {
+    color: #28a745;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #e6ffe6;
+}
+
+.loading {
+    color: #0066cc;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #e6f2ff;
+    text-align: center;
+}
+
+/* Scrollbars personalizadas */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.2);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0,0,0,0.3);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+
+    .left-panel, .right-panel {
+        height: 50vh;
+    }
+
+    .right-panel {
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    }
+
+    #result {
+        height: calc(50vh - 80px);
+    }
+}
+
+/* Para telas muito altas */
+@media (min-height: 1000px) {
+    .image-preview {
+        max-height: 50vh;
+    }
+}
+
+/* Para telas ultrawide */
+@media (min-width: 2000px) {
+    .grid-container {
+        grid-template-columns: 1fr 1fr;
+        max-width: none;
+    }
+}
