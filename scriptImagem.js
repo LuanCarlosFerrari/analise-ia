@@ -47,20 +47,54 @@ function getBase64(file) {
     });
 }
 
-// This keeps the exact formatting with line breaks
-const basePrompt = `Analise esta imagem e retorne APENAS as seguintes informações no formato EXATO, sem texto adicional:
+// Updated base prompt with stricter formatting
+const basePrompt = `Você deve analisar esta imagem e retornar EXCLUSIVAMENTE estas informações no formato abaixo:
 
-Nome completo da empresa:
-CNPJ:
-Nome do produto:
-Número do contrato:
-Número da nota fiscal:
-Data e hora da pesagem inicial:
-Peso inicial:
-Data e hora da pesagem final:
-Peso final:
+Nome da empresa:
+Cnpj:
+nota fiscal:
+CTE:
+Peso saida:
+Peso chegada:
 
-IMPORTANTE: Não adicione nenhuma outra informação, explicação ou comentário. Mantenha exatamente este formato e estes campos.`;
+REGRAS OBRIGATÓRIAS:
+1. APENAS retorne os campos acima
+2. Se não encontrar a informação, deixe o campo vazio
+3. NÃO adicione campos extras
+4. NÃO adicione explicações ou comentários
+5. Mantenha exatamente este formato`;
+
+// Add response validation function
+function validateResponse(response) {
+    const allowedFields = [
+        'Nome da empresa:',
+        'Cnpj:',
+        'nota fiscal:',
+        'CTE:',
+        'Peso saida:',
+        'Peso chegada:'
+    ];
+    
+    const lines = response.split('\n').filter(line => line.trim());
+    return lines.every(line => allowedFields.some(field => line.startsWith(field)));
+}
+
+// Clean response function
+function cleanResponse(response) {
+    const allowedFields = [
+        'Nome da empresa:',
+        'Cnpj:',
+        'nota fiscal:',
+        'CTE:',
+        'Peso saida:',
+        'Peso chegada:'
+    ];
+
+    const lines = response.split('\n');
+    return allowedFields
+        .map(field => lines.find(line => line.startsWith(field)) || field)
+        .join('\n');
+}
 
 async function analyzeImages() {
     const imageFiles = document.getElementById('imageInput').files;
@@ -80,7 +114,7 @@ async function analyzeImages() {
                 
                 // Add delay between requests
                 if (i > 0) {
-                    await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay
+                    await new Promise(resolve => setTimeout(resolve, 1000));
                 }
                 
                 const result = {
@@ -163,7 +197,14 @@ async function analyzeWithGemini(imageBase64, prompt, retryCount = 0) {
             throw new Error('Formato de resposta inválido');
         }
 
-        return data.candidates[0].content.parts[0].text;
+        let result = data.candidates[0].content.parts[0].text;
+
+        // Validate and clean response
+        if (!validateResponse(result)) {
+            result = cleanResponse(result);
+        }
+
+        return result;
     } catch (error) {
         if (error.message.includes('quota')) {
             throw new Error('Limite de requisições da API atingido. Por favor, tente novamente em alguns minutos.');
@@ -182,15 +223,12 @@ function showProgress(current, total) {
 // Função para mostrar os resultados
 function parseAnalysisResponse(text) {
     const fields = [
-        'Nome completo da empresa:',
-        'CNPJ:',
-        'Nome do produto:',
-        'Número do contrato:',
-        'Número da nota fiscal:',
-        'Data e hora da pesagem inicial:',
-        'Peso inicial:',
-        'Data e hora da pesagem final:',
-        'Peso final:'
+        'Nome da empresa:',
+        'Cnpj:',
+        'nota fiscal:',
+        'CTE:',
+        'Peso saida:',
+        'Peso chegada:'
     ];
     
     let parsedResult = '';
@@ -252,24 +290,48 @@ function showLoading() {
 // Function to format analysis data for Excel
 function parseAnalysisToObject(text) {
     const fields = [
-        'Nome completo da empresa',
-        'CNPJ',
-        'Nome do produto',
-        'Número do contrato',
-        'Número da nota fiscal',
-        'Data e hora da pesagem inicial',
-        'Peso inicial',
-        'Data e hora da pesagem final',
-        'Peso final'
+        'Nome da empresa',
+        'Cnpj',
+        'nota fiscal',
+        'CTE',
+        'Peso saida',
+        'Peso chegada'
     ];
     
     const result = {};
+    const lines = text.split('\n');
+    
     fields.forEach(field => {
-        const regex = new RegExp(`${field}:(.*)(?=\\n|$)`, 'i');
-        const match = text.match(regex);
-        result[field] = match ? match[1].trim() : '';
+        const line = lines.find(l => l.toLowerCase().includes(field.toLowerCase()));
+        if (line) {
+            // Extract value after the field name
+            const value = line.substring(line.toLowerCase().indexOf(field.toLowerCase()) + field.length).trim();
+            result[field] = value;
+        } else {
+            result[field] = 'Não encontrado';
+        }
     });
+    
     return result;
+}
+
+function convertToExcel(data) {
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Análises");
+    
+    // Adjust column widths
+    const cols = [
+        { wch: 30 }, // Nome da empresa
+        { wch: 20 }, // Cnpj
+        { wch: 15 }, // nota fiscal
+        { wch: 15 }, // CTE
+        { wch: 15 }, // Peso saida
+        { wch: 15 }  // Peso chegada
+    ];
+    
+    worksheet['!cols'] = cols;
+    return workbook;
 }
 
 // Function to export results to Excel
@@ -290,17 +352,32 @@ function exportToExcel() {
         
         data.push({
             'Nome do Arquivo': fileName,
-            ...parsedData
+            'Nome da empresa': parsedData['Nome da empresa'],
+            'Cnpj': parsedData['Cnpj'],
+            'nota fiscal': parsedData['nota fiscal'],
+            'CTE': parsedData['CTE'],
+            'Peso saida': parsedData['Peso saida'],
+            'Peso chegada': parsedData['Peso chegada']
         });
     });
 
     const worksheet = XLSX.utils.json_to_sheet(data);
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Análises');
-
-    // Generate Excel file
     XLSX.writeFile(workbook, 'analise_imagens.xlsx');
 }
 
 function resetPrompt() {
     document.getElementById('prompt').value = basePrompt;
 }
+
+// Add this function at the bottom of the file
+function initializePrompt() {
+    const promptTextarea = document.getElementById('prompt');
+    if (promptTextarea) {
+        promptTextarea.value = basePrompt;
+        promptTextarea.placeholder = "Prompt opcional (o prompt padrão será usado se vazio)";
+    }
+}
+
+// Add this line after your existing event listeners
+document.addEventListener('DOMContentLoaded', initializePrompt);

@@ -19,7 +19,12 @@
                 </div>
 
                 <label for="prompt">Prompt (opcional):</label>
-                <textarea id="prompt">Analise esta imagem e retorne APENAS as seguintes informações...</textarea>
+                <textarea 
+                    id="prompt" 
+                    class="form-control" 
+                    rows="3" 
+                    placeholder="Prompt opcional (o prompt padrão será usado se vazio)"
+                ></textarea>
                 
                 <button onclick="analyzeImages()">Analisar Imagens</button>
               <!--  <button onclick="resetPrompt()">Restaurar Prompt Padrão</button>-->

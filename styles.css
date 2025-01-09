@@ -1,10 +1,21 @@
-/* Reset e configurações base */
+/*==================================
+ * 1. Reset e Configurações Base
+ *==================================*/
+
+/* Reset Global
+ * Propósito: Normalização cross-browser
+ * Uso: Aplicado a todos elementos
+ */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* Configuração Base Body
+ * Propósito: Layout base da aplicação
+ * Comportamento: Tela cheia sem scroll
+ */
 body {
     font-family: Arial, sans-serif;
     background-color: #f5f5f5;
@@ -16,7 +27,14 @@ body {
     overflow: hidden; /* Previne scroll na página */
 }
 
-/* Container principal em tela cheia */
+/*==================================
+ * 2. Layout Principal
+ *==================================*/
+
+/* Grid Container
+ * Propósito: Layout duas colunas
+ * Visual: Tela cheia dividida
+ */
 .grid-container {
     width: 100vw;
     height: 100vh;
@@ -27,7 +45,10 @@ body {
     padding: 0;
 }
 
-/* Painéis laterais */
+/* Painéis Laterais
+ * Propósito: Containers principais
+ * Comportamento: Flex column com scroll
+ */
 .left-panel, .right-panel {
     height: 100vh;
     background-color: white;
@@ -51,7 +72,14 @@ h1 {
     flex-shrink: 0;
 }
 
-/* Área de entrada */
+/*==================================
+ * 3. Componentes de Entrada
+ *==================================*/
+
+/* Área de Input
+ * Propósito: Container formulários
+ * Layout: Coluna flexível com scroll
+ */
 .input-area {
     display: flex;
     flex-direction: column;
@@ -75,7 +103,10 @@ input[type="file"] {
     border-radius: 4px;
 }
 
-/* Preview da imagem */
+/* Upload de Imagem
+ * Propósito: Área upload/preview
+ * Comportamento: Container flexível
+ */
 .image-upload {
     display: flex;
     flex-direction: column;
@@ -180,17 +211,57 @@ button:disabled {
 }
 
 #result {
+    display: flex;
+    flex-direction: column;
     flex: 1;
+    gap: 20px;
     overflow-y: auto;
-    height: calc(100vh - 80px); /* Altura total menos o cabeçalho */
-    margin-bottom: 20px; /* Add space for button below */
+    margin: 0 0 20px 0;
+    padding-right: 10px;
+}
+
+/*==================================
+ * 4. Componentes de Resultado
+ *==================================*/
+
+/* Box de Resultado
+ * Propósito: Exibição de outputs
+ * Visual: Container com borda tracejada
+ */
+.result-box {
+    width: 100%;
+    height: 200px;
+    border: 2px dashed #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    margin: 10px 0;
+    background-color: #f8f9fa;
+    overflow-y: auto;
+}
+
+.result-box p {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.result-box ul {
+    margin: 0;
+}
+
+.result-box img {
+    max-width: 100%;
+    max-height: 50%;
+    object-fit: contain;
 }
 
 .result-box {
-    background-color: #f8f8f8;
-    padding: 20px;
-    border-radius: 8px;
-    height: 100%;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 1px;
+    margin-bottom: 15px;
+    min-height: 100px;
+    height: auto;
     overflow-y: auto;
 }
 
@@ -199,7 +270,20 @@ button:disabled {
     font-size: clamp(0.875rem, 1.5vw, 1rem);
 }
 
-/* Estados de feedback */
+/*==================================
+ * 5. Estados de Feedback
+ *==================================*/
+
+/* Mensagens de Estado
+ * Propósito: Feedback visual ao usuário
+ * Variações: error, success, loading
+ */
+.error, .success, .loading {
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
 .error {
     color: #dc3545;
     padding: 10px;
@@ -223,64 +307,23 @@ button:disabled {
     text-align: center;
 }
 
-/* Scrollbars personalizadas */
-::-webkit-scrollbar {
-    width: 6px;
-}
+/*==================================
+ * 6. Componentes de Análise
+ *==================================*/
 
-::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-    background: rgba(0,0,0,0.2);
-    border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: rgba(0,0,0,0.3);
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-    .grid-container {
-        grid-template-columns: 1fr;
-    }
-
-    .left-panel, .right-panel {
-        height: 50vh;
-    }
-
-    .right-panel {
-        box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-    }
-
-    #result {
-        height: calc(50vh - 80px);
-    }
-}
-
-/* Para telas muito altas */
-@media (min-height: 1000px) {
-    .image-preview {
-        max-height: 50vh;
-    }
-}
-
-/* Para telas ultrawide */
-@media (min-width: 2000px) {
-    .grid-container {
-        grid-template-columns: 1fr 1fr;
-        max-width: none;
-    }
-}
-
+/* Container de Análise
+ * Propósito: Exibição resultados análise
+ * Layout: Grid com scroll
+ */
 .analysis-content {
     display: grid;
     gap: 20px;
     padding: 15px;
     background: #fafafa;
     border-radius: 6px;
+    max-height: calc(100vh - 250px);
+    overflow-y: auto;
+    padding: 10px;
 }
 
 .key-points {
@@ -417,6 +460,80 @@ button:disabled {
 .success {
     background: #e8f5e9;
     color: #2e7d32;
+}
+
+/*==================================
+ * 7. Responsividade
+ *==================================*/
+
+/* Mobile (<768px)
+ * Propósito: Layout responsivo
+ * Mudanças: Uma coluna, altura dividida
+ */
+@media (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+
+    .left-panel, .right-panel {
+        height: 50vh;
+    }
+
+    .right-panel {
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    }
+
+    #result {
+        height: calc(50vh - 80px);
+    }
+
+    .analysis-content {
+        max-height: calc(100vh - 300px);
+    }
+
+    .result-box {
+        height: 200px;
+    }
+}
+
+/* Para telas muito altas */
+@media (min-height: 1000px) {
+    .image-preview {
+        max-height: 50vh;
+    }
+}
+
+/* Para telas ultrawide */
+@media (min-width: 2000px) {
+    .grid-container {
+        grid-template-columns: 1fr 1fr;
+        max-width: none;
+    }
+}
+
+/*==================================
+ * 8. Utilitários
+ *==================================*/
+
+/* Scrollbar Personalizada
+ * Propósito: Visual consistente
+ * Suporte: Webkit only
+ */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.2);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0,0,0,0.3);
 }
 
 #prompt {
