@@ -1,6 +1,10 @@
 // Defina sua chave API como uma constante
 const API_KEY = 'AIzaSyCrzVWf2E7g8xAF7Kw_BJ1MTVGPRCLbkfE';
 
+// Add these constants at the top
+const RETRY_DELAY = 1000; // 1 second
+const MAX_RETRIES = 3;
+
 // Atualizar o event listener do input de imagens
 document.getElementById('imageInput').addEventListener('change', function(e) {
     const files = e.target.files;
@@ -43,7 +47,7 @@ function getBase64(file) {
     });
 }
 
-// Prompt base para análise
+// This keeps the exact formatting with line breaks
 const basePrompt = `Analise esta imagem e retorne APENAS as seguintes informações no formato EXATO, sem texto adicional:
 
 Nome completo da empresa:
@@ -70,30 +74,40 @@ async function analyzeImages() {
 
     try {
         for (let i = 0; i < imageFiles.length; i++) {
-            const imageBase64 = await getBase64(imageFiles[i]);
-            const customPrompt = document.getElementById('prompt').value || basePrompt;
-            
-            // Preparar análise para cada imagem
-            const result = {
-                fileName: imageFiles[i].name,
-                analysis: await analyzeWithGemini(imageBase64, customPrompt)
-            };
-            
-            console.log('Resultado da análise:', result); // Debug log
-            results.push(result);
-            showProgress(i + 1, imageFiles.length);
+            try {
+                const imageBase64 = await getBase64(imageFiles[i]);
+                const customPrompt = document.getElementById('prompt').value || basePrompt;
+                
+                // Add delay between requests
+                if (i > 0) {
+                    await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay
+                }
+                
+                const result = {
+                    fileName: imageFiles[i].name,
+                    analysis: await analyzeWithGemini(imageBase64, customPrompt)
+                };
+                
+                results.push(result);
+                showProgress(i + 1, imageFiles.length);
+            } catch (error) {
+                console.error(`Erro na imagem ${imageFiles[i].name}:`, error);
+                results.push({
+                    fileName: imageFiles[i].name,
+                    analysis: `Erro: ${error.message}`
+                });
+            }
         }
 
-        console.log('Todos resultados:', results); // Debug log
         showResults(results);
         showSuccess();
     } catch (error) {
         console.error('Erro:', error);
-        showError('Erro ao analisar imagens: ' + error.message);
+        showError(error.message);
     }
 }
 
-async function analyzeWithGemini(imageBase64, prompt) {
+async function analyzeWithGemini(imageBase64, prompt, retryCount = 0) {
     try {
         const requestBody = {
             contents: [{
@@ -126,6 +140,15 @@ async function analyzeWithGemini(imageBase64, prompt) {
             }
         );
 
+        if (response.status === 429) {
+            if (retryCount < MAX_RETRIES) {
+                await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+                return await analyzeWithGemini(imageBase64, prompt, retryCount + 1);
+            } else {
+                throw new Error('Limite de requisições atingido. Por favor, tente novamente mais tarde.');
+            }
+        }
+
         if (!response.ok) {
             const errorData = await response.json();
             console.error('API Error:', errorData);
@@ -142,6 +165,9 @@ async function analyzeWithGemini(imageBase64, prompt) {
 
         return data.candidates[0].content.parts[0].text;
     } catch (error) {
+        if (error.message.includes('quota')) {
+            throw new Error('Limite de requisições da API atingido. Por favor, tente novamente em alguns minutos.');
+        }
         console.error('Full Error:', error);
         throw error;
     }
@@ -180,9 +206,11 @@ function parseAnalysisResponse(text) {
 
 function showResults(results) {
     const resultDiv = document.getElementById('result');
+    const exportButton = document.getElementById('exportButton');
     
     if (!results || results.length === 0) {
         resultDiv.innerHTML = '<div class="error">Nenhum resultado para exibir</div>';
+        exportButton.disabled = true;
         return;
     }
     
@@ -201,6 +229,7 @@ function showResults(results) {
     
     allResults += '</div>';
     resultDiv.innerHTML = allResults;
+    exportButton.disabled = false;
 }
 
 function showError(message) {
@@ -218,4 +247,60 @@ function showSuccess() {
 function showLoading() {
     const resultDiv = document.getElementById('result');
     resultDiv.innerHTML = '<div class="loading">Analisando imagens...</div>';
+}
+
+// Function to format analysis data for Excel
+function parseAnalysisToObject(text) {
+    const fields = [
+        'Nome completo da empresa',
+        'CNPJ',
+        'Nome do produto',
+        'Número do contrato',
+        'Número da nota fiscal',
+        'Data e hora da pesagem inicial',
+        'Peso inicial',
+        'Data e hora da pesagem final',
+        'Peso final'
+    ];
+    
+    const result = {};
+    fields.forEach(field => {
+        const regex = new RegExp(`${field}:(.*)(?=\\n|$)`, 'i');
+        const match = text.match(regex);
+        result[field] = match ? match[1].trim() : '';
+    });
+    return result;
+}
+
+// Function to export results to Excel
+function exportToExcel() {
+    const resultElements = document.querySelectorAll('.analysis-result');
+    if (resultElements.length === 0) {
+        showError('Não há dados para exportar');
+        return;
+    }
+
+    const workbook = XLSX.utils.book_new();
+    const data = [];
+
+    resultElements.forEach(element => {
+        const fileName = element.querySelector('h3').textContent.replace('Arquivo: ', '');
+        const analysisText = element.querySelector('.analysis-content pre').textContent;
+        const parsedData = parseAnalysisToObject(analysisText);
+        
+        data.push({
+            'Nome do Arquivo': fileName,
+            ...parsedData
+        });
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Análises');
+
+    // Generate Excel file
+    XLSX.writeFile(workbook, 'analise_imagens.xlsx');
+}
+
+function resetPrompt() {
+    document.getElementById('prompt').value = basePrompt;
 }

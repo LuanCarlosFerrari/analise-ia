@@ -155,11 +155,35 @@ button:disabled {
     cursor: not-allowed;
 }
 
-/* Área de resultado */
+#importButton, 
+.import-container {
+    display: block;  /* Change from float to block */
+    margin-top: 20px;  /* Space from result box */
+    text-align: right; /* Align button to right */
+}
+
+#importButton {
+    margin-right: 20px;
+}
+
+#exportButton {
+    background-color: #2196F3;
+}
+
+#exportButton:hover {
+    background-color: #1976D2;
+}
+
+#exportButton:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
 #result {
     flex: 1;
     overflow-y: auto;
     height: calc(100vh - 80px); /* Altura total menos o cabeçalho */
+    margin-bottom: 20px; /* Add space for button below */
 }
 
 .result-box {
@@ -343,6 +367,7 @@ button:disabled {
     border-radius: 4px;
     font-family: 'Consolas', monospace;
     color: #333;
+    overflow-y: auto;
 }
 
 .file-list {
@@ -392,4 +417,9 @@ button:disabled {
 .success {
     background: #e8f5e9;
     color: #2e7d32;
+}
+
+#prompt {
+    height: 300px;
+    white-space: pre-wrap;
 }
