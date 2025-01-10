@@ -52,7 +52,7 @@ const basePrompt = `Você deve analisar esta imagem e retornar EXCLUSIVAMENTE es
 
 Nome da empresa:
 Cnpj:
-nota fiscal:
+Nota fiscal:
 CTE:
 Peso saida:
 Peso chegada:
@@ -69,7 +69,7 @@ function validateResponse(response) {
     const allowedFields = [
         'Nome da empresa:',
         'Cnpj:',
-        'nota fiscal:',
+        'Nota fiscal:',
         'CTE:',
         'Peso saida:',
         'Peso chegada:'
@@ -84,7 +84,7 @@ function cleanResponse(response) {
     const allowedFields = [
         'Nome da empresa:',
         'Cnpj:',
-        'nota fiscal:',
+        'Nota fiscal:',
         'CTE:',
         'Peso saida:',
         'Peso chegada:'
@@ -318,7 +318,7 @@ function parseAnalysisToObject(text) {
     const fields = [
         'Nome da empresa',
         'Cnpj',
-        'nota fiscal',
+        'Nota fiscal',
         'CTE',
         'Peso saida',
         'Peso chegada'
@@ -350,7 +350,7 @@ function convertToExcel(data) {
     const cols = [
         { wch: 30 }, // Nome da empresa
         { wch: 20 }, // Cnpj
-        { wch: 15 }, // nota fiscal
+        { wch: 15 }, // Nota fiscal
         { wch: 15 }, // CTE
         { wch: 15 }, // Peso saida
         { wch: 15 }  // Peso chegada
@@ -380,7 +380,7 @@ function exportToExcel() {
             'Nome do Arquivo': fileName,
             'Nome da empresa': parsedData['Nome da empresa'],
             'Cnpj': parsedData['Cnpj'],
-            'nota fiscal': parsedData['nota fiscal'],
+            'Nota fiscal': parsedData['Nota fiscal'],
             'CTE': parsedData['CTE'],
             'Peso saida': parsedData['Peso saida'],
             'Peso chegada': parsedData['Peso chegada']
