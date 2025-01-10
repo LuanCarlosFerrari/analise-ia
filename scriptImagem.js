@@ -221,70 +221,96 @@ function showProgress(current, total) {
 }
 
 // Função para mostrar os resultados
-function parseAnalysisResponse(text) {
-    const fields = [
-        'Nome da empresa:',
-        'Cnpj:',
-        'nota fiscal:',
-        'CTE:',
-        'Peso saida:',
-        'Peso chegada:'
-    ];
-    
-    let parsedResult = '';
-    for (const field of fields) {
-        const regex = new RegExp(`${field}.*?(?=\\n|$)`, 'i');
-        const match = text.match(regex);
-        if (match) {
-            parsedResult += match[0] + '\n';
-        }
+class UIManager {
+    constructor() {
+        this.resultDiv = document.getElementById('result');
+        this.template = this.createTemplate();
+        this.fragment = document.createDocumentFragment();
     }
-    return parsedResult;
+
+    createTemplate() {
+        return {
+            container: '<div class="results-container">',
+            result: (fileName, analysis) => `
+                <div class="analysis-result">
+                    <h3>Arquivo: ${fileName}</h3>
+                    <div class="analysis-content">
+                        <pre>${analysis}</pre>
+                    </div>
+                </div>
+            `
+        };
+    }
+
+    async displayResults(results) {
+        if (!results?.length) {
+            this.showError('Nenhum resultado para exibir');
+            return;
+        }
+
+        this.showLoading();
+        const container = document.createElement('div');
+        container.className = 'results-container';
+
+        // Process in batches of 5
+        const batchSize = 5;
+        for (let i = 0; i < results.length; i += batchSize) {
+            const batch = results.slice(i, i + batchSize);
+            await this.processBatch(batch, container);
+        }
+
+        this.resultDiv.innerHTML = '';
+        this.resultDiv.appendChild(container);
+        document.getElementById('exportButton').disabled = false;
+    }
+
+    async processBatch(batch, container) {
+        return new Promise(resolve => {
+            requestAnimationFrame(() => {
+                batch.forEach(result => {
+                    const element = document.createElement('div');
+                    element.innerHTML = this.template.result(result.fileName, result.analysis);
+                    container.appendChild(element.firstElementChild);
+                });
+                resolve();
+            });
+        });
+    }
+
+    showError(message) {
+        this.resultDiv.innerHTML = `<div class="error">${message}</div>`;
+    }
+
+    showSuccess() {
+        const successMessage = document.createElement('div');
+        successMessage.className = 'success';
+        successMessage.textContent = 'Análise concluída com sucesso!';
+        this.resultDiv.prepend(successMessage);
+    }
+
+    showLoading() {
+        this.resultDiv.innerHTML = '<div class="loading">Analisando imagens...</div>';
+    }
 }
 
+// Initialize UI manager
+const uiManager = new UIManager();
+
+// Replace existing functions with UI manager calls
 function showResults(results) {
-    const resultDiv = document.getElementById('result');
-    const exportButton = document.getElementById('exportButton');
-    
-    if (!results || results.length === 0) {
-        resultDiv.innerHTML = '<div class="error">Nenhum resultado para exibir</div>';
-        exportButton.disabled = true;
-        return;
-    }
-    
-    let allResults = '<div class="results-container">';
-    
-    results.forEach(result => {
-        allResults += `
-            <div class="analysis-result">
-                <h3>Arquivo: ${result.fileName}</h3>
-                <div class="analysis-content">
-                    <pre>${result.analysis}</pre>
-                </div>
-            </div>
-        `;
-    });
-    
-    allResults += '</div>';
-    resultDiv.innerHTML = allResults;
-    exportButton.disabled = false;
+    uiManager.displayResults(results);
 }
 
 function showError(message) {
-    const resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = `<div class="error">${message}</div>`;
+    uiManager.showError(message);
 }
 
 function showSuccess() {
-    const successMessage = document.createElement('div');
-    successMessage.classList.add('success');
-    successMessage.textContent = 'Análise concluída com sucesso!';
-    document.getElementById('result').prepend(successMessage);
+    uiManager.showSuccess();
 }
 
 function showLoading() {
-    const resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = '<div class="loading">Analisando imagens...</div>';
+    uiManager.showLoading();
 }
 
 // Function to format analysis data for Excel
@@ -365,19 +391,3 @@ function exportToExcel() {
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Análises');
     XLSX.writeFile(workbook, 'analise_imagens.xlsx');
 }
-
-function resetPrompt() {
-    document.getElementById('prompt').value = basePrompt;
-}
-
-// Add this function at the bottom of the file
-function initializePrompt() {
-    const promptTextarea = document.getElementById('prompt');
-    if (promptTextarea) {
-        promptTextarea.value = basePrompt;
-        promptTextarea.placeholder = "Prompt opcional (o prompt padrão será usado se vazio)";
-    }
-}
-
-// Add this line after your existing event listeners
-document.addEventListener('DOMContentLoaded', initializePrompt);

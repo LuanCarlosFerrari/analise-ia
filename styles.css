@@ -1,54 +1,33 @@
-/*==================================
- * 1. Reset e Configurações Base
- *==================================*/
-
-/* Reset Global
- * Propósito: Normalização cross-browser
- * Uso: Aplicado a todos elementos
- */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Configuração Base Body
- * Propósito: Layout base da aplicação
- * Comportamento: Tela cheia sem scroll
- */
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f5f5f5;
     margin: 0;
     padding: 0;
     min-height: 100vh;
-    height: 100vh; /* Força altura total */
+    height: 100vh; 
     display: flex;
-    overflow: hidden; /* Previne scroll na página */
+    overflow: hidden; 
 }
 
-/*==================================
- * 2. Layout Principal
- *==================================*/
 
-/* Grid Container
- * Propósito: Layout duas colunas
- * Visual: Tela cheia dividida
- */
 .grid-container {
     width: 100vw;
     height: 100vh;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0; /* Remove espaço entre painéis */
+    gap: 0; 
     margin: 0;
     padding: 0;
 }
 
-/* Painéis Laterais
- * Propósito: Containers principais
- * Comportamento: Flex column com scroll
- */
+
 .left-panel, .right-panel {
     height: 100vh;
     background-color: white;
@@ -59,12 +38,12 @@ body {
     position: relative;
 }
 
-/* Adiciona uma sombra sutil entre os painéis */
+
 .right-panel {
     box-shadow: -2px 0 10px rgba(0,0,0,0.1);
 }
 
-/* Cabeçalhos */
+
 h1 {
     color: #333;
     font-size: clamp(1.5rem, 2vw, 2rem);
@@ -72,14 +51,7 @@ h1 {
     flex-shrink: 0;
 }
 
-/*==================================
- * 3. Componentes de Entrada
- *==================================*/
 
-/* Área de Input
- * Propósito: Container formulários
- * Layout: Coluna flexível com scroll
- */
 .input-area {
     display: flex;
     flex-direction: column;
@@ -89,7 +61,6 @@ h1 {
     padding-right: 10px;
 }
 
-/* Labels e inputs */
 label {
     color: #333;
     font-weight: bold;
@@ -103,10 +74,6 @@ input[type="file"] {
     border-radius: 4px;
 }
 
-/* Upload de Imagem
- * Propósito: Área upload/preview
- * Comportamento: Container flexível
- */
 .image-upload {
     display: flex;
     flex-direction: column;
@@ -153,7 +120,7 @@ hr {
     margin: 20px 0;
 }
 
-/* Área de texto */
+
 textarea {
     width: 100%;
     height: 100px;
@@ -164,7 +131,6 @@ textarea {
     font-size: clamp(0.875rem, 1.5vw, 1rem);
 }
 
-/* Botão */
 button {
     background-color: #4CAF50;
     color: white;
@@ -188,9 +154,9 @@ button:disabled {
 
 #importButton, 
 .import-container {
-    display: block;  /* Change from float to block */
-    margin-top: 20px;  /* Space from result box */
-    text-align: right; /* Align button to right */
+    display: block;
+    margin-top: 20px;  
+    text-align: right; 
 }
 
 #importButton {
@@ -220,21 +186,13 @@ button:disabled {
     padding-right: 10px;
 }
 
-/*==================================
- * 4. Componentes de Resultado
- *==================================*/
-
-/* Box de Resultado
- * Propósito: Exibição de outputs
- * Visual: Container com borda tracejada
- */
 .result-box {
     width: 100%;
-    height: 200px;
+    height: 100px;
     border: 2px dashed #ddd;
     border-radius: 4px;
-    padding: 15px;
-    margin: 10px 0;
+    padding: 10px;
+    margin: 5px 0;
     background-color: #f8f9fa;
     overflow-y: auto;
 }
@@ -260,7 +218,7 @@ button:disabled {
     border-radius: 4px;
     padding: 1px;
     margin-bottom: 15px;
-    min-height: 100px;
+    min-height: 30px;
     height: auto;
     overflow-y: auto;
 }
@@ -270,14 +228,6 @@ button:disabled {
     font-size: clamp(0.875rem, 1.5vw, 1rem);
 }
 
-/*==================================
- * 5. Estados de Feedback
- *==================================*/
-
-/* Mensagens de Estado
- * Propósito: Feedback visual ao usuário
- * Variações: error, success, loading
- */
 .error, .success, .loading {
     padding: 10px;
     border-radius: 4px;
@@ -307,14 +257,6 @@ button:disabled {
     text-align: center;
 }
 
-/*==================================
- * 6. Componentes de Análise
- *==================================*/
-
-/* Container de Análise
- * Propósito: Exibição resultados análise
- * Layout: Grid com scroll
- */
 .analysis-content {
     display: grid;
     gap: 20px;
@@ -385,7 +327,6 @@ button:disabled {
     color: #666;
 }
 
-/* Incorporando styles de analysis.css */
 .analysis-container {
   padding: 20px;
   margin: 10px;
