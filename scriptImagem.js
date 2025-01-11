@@ -1,30 +1,26 @@
-// Defina sua chave API como uma constante
+// API Key constant
 const API_KEY = 'AIzaSyCrzVWf2E7g8xAF7Kw_BJ1MTVGPRCLbkfE';
 
-// Add these constants at the top
+// Retry constants
 const RETRY_DELAY = 1000; // 1 second
 const MAX_RETRIES = 3;
 
-// Atualizar o event listener do input de imagens
+// Image input event listener
 document.getElementById('imageInput').addEventListener('change', function(e) {
     const files = e.target.files;
     const imagePreview = document.getElementById('imagePreview');
     
-    // Criar lista de arquivos
     const fileList = document.createElement('ul');
     fileList.classList.add('file-list');
     
-    // Limpar preview anterior
     imagePreview.innerHTML = '';
     imagePreview.appendChild(fileList);
     
-    // Contador de arquivos
     const counter = document.createElement('div');
     counter.classList.add('file-counter');
     counter.textContent = `Total de arquivos: ${files.length}`;
     imagePreview.insertBefore(counter, fileList);
     
-    // Adicionar cada arquivo à lista
     Array.from(files).forEach((file, index) => {
         const listItem = document.createElement('li');
         listItem.classList.add('file-item');
@@ -33,13 +29,12 @@ document.getElementById('imageInput').addEventListener('change', function(e) {
     });
 });
 
-// Função para converter imagem para Base64
+// Convert image to Base64
 function getBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = () => {
-            // Remover o prefixo "data:image/jpeg;base64," do resultado
             const base64String = reader.result.split(',')[1];
             resolve(base64String);
         };
@@ -47,7 +42,7 @@ function getBase64(file) {
     });
 }
 
-// Updated base prompt with stricter formatting
+// Base prompt
 const basePrompt = `Você deve analisar esta imagem e retornar EXCLUSIVAMENTE estas informações no formato abaixo:
 
 Nome da empresa:
@@ -64,7 +59,7 @@ REGRAS OBRIGATÓRIAS:
 4. NÃO adicione explicações ou comentários
 5. Mantenha exatamente este formato`;
 
-// Add response validation function
+// Validate response
 function validateResponse(response) {
     const allowedFields = [
         'Nome da empresa:',
@@ -79,7 +74,7 @@ function validateResponse(response) {
     return lines.every(line => allowedFields.some(field => line.startsWith(field)));
 }
 
-// Clean response function
+// Clean response
 function cleanResponse(response) {
     const allowedFields = [
         'Nome da empresa:',
@@ -96,6 +91,7 @@ function cleanResponse(response) {
         .join('\n');
 }
 
+// Analyze images
 async function analyzeImages() {
     const imageFiles = document.getElementById('imageInput').files;
     if (imageFiles.length === 0) {
@@ -112,7 +108,6 @@ async function analyzeImages() {
                 const imageBase64 = await getBase64(imageFiles[i]);
                 const customPrompt = document.getElementById('prompt').value || basePrompt;
                 
-                // Add delay between requests
                 if (i > 0) {
                     await new Promise(resolve => setTimeout(resolve, 1000));
                 }
@@ -141,6 +136,7 @@ async function analyzeImages() {
     }
 }
 
+// Analyze with Gemini API
 async function analyzeWithGemini(imageBase64, prompt, retryCount = 0) {
     try {
         const requestBody = {
@@ -160,8 +156,6 @@ async function analyzeWithGemini(imageBase64, prompt, retryCount = 0) {
                 topP: 1
             }
         };
-
-        console.log('Request:', JSON.stringify(requestBody, null, 2));
 
         const response = await fetch(
             `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,
@@ -185,47 +179,36 @@ async function analyzeWithGemini(imageBase64, prompt, retryCount = 0) {
 
         if (!response.ok) {
             const errorData = await response.json();
-            console.error('API Error:', errorData);
             throw new Error(`API error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
         }
 
         const data = await response.json();
-        console.log('API Response:', data);
 
         if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
-            console.error('Invalid Response Structure:', data);
             throw new Error('Formato de resposta inválido');
         }
 
         let result = data.candidates[0].content.parts[0].text;
 
-        // Validate and clean response
         if (!validateResponse(result)) {
             result = cleanResponse(result);
         }
 
         return result;
+
     } catch (error) {
         if (error.message.includes('quota')) {
             throw new Error('Limite de requisições da API atingido. Por favor, tente novamente em alguns minutos.');
         }
-        console.error('Full Error:', error);
         throw error;
     }
 }
 
-// Função para mostrar o progresso
-function showProgress(current, total) {
-    const resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = `<div class="loading">Analisando imagem ${current} de ${total}...</div>`;
-}
-
-// Função para mostrar os resultados
+// UI Manager Class
 class UIManager {
     constructor() {
         this.resultDiv = document.getElementById('result');
         this.template = this.createTemplate();
-        this.fragment = document.createDocumentFragment();
     }
 
     createTemplate() {
@@ -252,7 +235,6 @@ class UIManager {
         const container = document.createElement('div');
         container.className = 'results-container';
 
-        // Process in batches of 5
         const batchSize = 5;
         for (let i = 0; i < results.length; i += batchSize) {
             const batch = results.slice(i, i + batchSize);
@@ -296,7 +278,7 @@ class UIManager {
 // Initialize UI manager
 const uiManager = new UIManager();
 
-// Replace existing functions with UI manager calls
+// Show functions
 function showResults(results) {
     uiManager.displayResults(results);
 }
@@ -313,7 +295,12 @@ function showLoading() {
     uiManager.showLoading();
 }
 
-// Function to format analysis data for Excel
+function showProgress(current, total) {
+    const resultDiv = document.getElementById('result');
+    resultDiv.innerHTML = `<div class="loading">Analisando imagem ${current} de ${total}...</div>`;
+}
+
+// Format analysis data for Excel
 function parseAnalysisToObject(text) {
     const fields = [
         'Nome da empresa',
@@ -330,7 +317,6 @@ function parseAnalysisToObject(text) {
     fields.forEach(field => {
         const line = lines.find(l => l.toLowerCase().includes(field.toLowerCase()));
         if (line) {
-            // Extract value after the field name
             const value = line.substring(line.toLowerCase().indexOf(field.toLowerCase()) + field.length).trim();
             result[field] = value;
         } else {
@@ -341,26 +327,7 @@ function parseAnalysisToObject(text) {
     return result;
 }
 
-function convertToExcel(data) {
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Análises");
-    
-    // Adjust column widths
-    const cols = [
-        { wch: 30 }, // Nome da empresa
-        { wch: 20 }, // Cnpj
-        { wch: 15 }, // Nota fiscal
-        { wch: 15 }, // CTE
-        { wch: 15 }, // Peso saida
-        { wch: 15 }  // Peso chegada
-    ];
-    
-    worksheet['!cols'] = cols;
-    return workbook;
-}
-
-// Function to export results to Excel
+// Export to Excel function
 function exportToExcel() {
     const resultElements = document.querySelectorAll('.analysis-result');
     if (resultElements.length === 0) {
@@ -368,7 +335,6 @@ function exportToExcel() {
         return;
     }
 
-    const workbook = XLSX.utils.book_new();
     const data = [];
 
     resultElements.forEach(element => {
@@ -387,7 +353,57 @@ function exportToExcel() {
         });
     });
 
+    const workbook = XLSX.utils.book_new();
     const worksheet = XLSX.utils.json_to_sheet(data);
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Análises');
     XLSX.writeFile(workbook, 'analise_imagens.xlsx');
 }
+
+// Theme Toggle Implementation
+function initThemeToggle() {
+    const themeToggle = document.getElementById('themeToggle');
+    const html = document.documentElement;
+    
+    if (!themeToggle) {
+        console.error('Theme toggle button not found');
+        return;
+    }
+
+    let currentTheme;
+    try {
+        currentTheme = localStorage.getItem('theme') || 
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    } catch (e) {
+        console.warn('Could not access localStorage:', e);
+        currentTheme = 'light';
+    }
+    
+    const applyTheme = (theme) => {
+        html.setAttribute('data-theme', theme);
+        updateThemeIcon(theme);
+        try {
+            localStorage.setItem('theme', theme);
+        } catch (e) {
+            console.warn('Could not save theme preference:', e);
+        }
+    };
+
+    // Apply initial theme
+    applyTheme(currentTheme);
+
+    // Add click event listener
+    themeToggle.addEventListener('click', () => {
+        const newTheme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        applyTheme(newTheme);
+    });
+}
+
+function updateThemeIcon(theme) {
+    const iconElement = document.querySelector('.theme-toggle-icon');
+    if (iconElement) {
+        iconElement.textContent = theme === 'dark' ? '🌜' : '🌞';
+    }
+}
+
+// Initialize theme toggle when DOM is loaded
+document.addEventListener('DOMContentLoaded', initThemeToggle);
