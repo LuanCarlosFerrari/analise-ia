@@ -1,11 +1,8 @@
-// API Key constant
 const API_KEY = 'AIzaSyCrzVWf2E7g8xAF7Kw_BJ1MTVGPRCLbkfE';
 
-// Retry constants
-const RETRY_DELAY = 1000; // 1 second
+const RETRY_DELAY = 1000; 
 const MAX_RETRIES = 3;
 
-// Image input event listener
 document.getElementById('imageInput').addEventListener('change', function(e) {
     const files = e.target.files;
     const imagePreview = document.getElementById('imagePreview');
@@ -29,7 +26,6 @@ document.getElementById('imageInput').addEventListener('change', function(e) {
     });
 });
 
-// Convert image to Base64
 function getBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -42,7 +38,6 @@ function getBase64(file) {
     });
 }
 
-// Base prompt
 const basePrompt = `Você deve analisar esta imagem e retornar EXCLUSIVAMENTE estas informações no formato abaixo:
 
 Nome da empresa:
@@ -59,7 +54,6 @@ REGRAS OBRIGATÓRIAS:
 4. NÃO adicione explicações ou comentários
 5. Mantenha exatamente este formato`;
 
-// Validate response
 function validateResponse(response) {
     const allowedFields = [
         'Nome da empresa:',
@@ -74,7 +68,6 @@ function validateResponse(response) {
     return lines.every(line => allowedFields.some(field => line.startsWith(field)));
 }
 
-// Clean response
 function cleanResponse(response) {
     const allowedFields = [
         'Nome da empresa:',
@@ -91,7 +84,6 @@ function cleanResponse(response) {
         .join('\n');
 }
 
-// Analyze images
 async function analyzeImages() {
     const imageFiles = document.getElementById('imageInput').files;
     if (imageFiles.length === 0) {
@@ -136,7 +128,6 @@ async function analyzeImages() {
     }
 }
 
-// Analyze with Gemini API
 async function analyzeWithGemini(imageBase64, prompt, retryCount = 0) {
     try {
         const requestBody = {
@@ -204,7 +195,6 @@ async function analyzeWithGemini(imageBase64, prompt, retryCount = 0) {
     }
 }
 
-// UI Manager Class
 class UIManager {
     constructor() {
         this.resultDiv = document.getElementById('result');
@@ -275,10 +265,10 @@ class UIManager {
     }
 }
 
-// Initialize UI manager
+
 const uiManager = new UIManager();
 
-// Show functions
+
 function showResults(results) {
     uiManager.displayResults(results);
 }
@@ -300,7 +290,6 @@ function showProgress(current, total) {
     resultDiv.innerHTML = `<div class="loading">Analisando imagem ${current} de ${total}...</div>`;
 }
 
-// Format analysis data for Excel
 function parseAnalysisToObject(text) {
     const fields = [
         'Nome da empresa',
@@ -327,7 +316,6 @@ function parseAnalysisToObject(text) {
     return result;
 }
 
-// Export to Excel function
 function exportToExcel() {
     const resultElements = document.querySelectorAll('.analysis-result');
     if (resultElements.length === 0) {
@@ -359,7 +347,6 @@ function exportToExcel() {
     XLSX.writeFile(workbook, 'analise_imagens.xlsx');
 }
 
-// Theme Toggle Implementation
 function initThemeToggle() {
     const themeToggle = document.getElementById('themeToggle');
     const html = document.documentElement;
@@ -388,10 +375,10 @@ function initThemeToggle() {
         }
     };
 
-    // Apply initial theme
+   
     applyTheme(currentTheme);
 
-    // Add click event listener
+   
     themeToggle.addEventListener('click', () => {
         const newTheme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         applyTheme(newTheme);
@@ -405,5 +392,4 @@ function updateThemeIcon(theme) {
     }
 }
 
-// Initialize theme toggle when DOM is loaded
 document.addEventListener('DOMContentLoaded', initThemeToggle);
