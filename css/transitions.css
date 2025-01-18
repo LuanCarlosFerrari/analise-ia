@@ -1,0 +1,12 @@
+/* Apply transitions to elements */
+body,
+.left-panel,
+.right-panel,
+.result-box,
+input[type="file"],
+textarea,
+button,
+.file-list,
+.file-item {
+    transition: all 0.3s ease;
+}

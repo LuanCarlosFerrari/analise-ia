@@ -4,8 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Análise de Imagem</title>
-    <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.12.313/pdf.min.js"></script>
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/transitions.css">
+    <link rel="stylesheet" href="css/utilities.css">
 </head>
 <body>
     <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
@@ -19,7 +25,7 @@
                 <div class="input-area">
                     <div class="image-upload">
                         <label for="imageInput">Selecione uma imagem:</label>
-                        <input type="file" id="imageInput" accept="image/*" multiple>
+                        <input type="file" id="imageInput" accept="image/*,.pdf" multiple>
                         <div id="imagePreview" class="image-preview"></div>
                     </div>
 
@@ -28,7 +34,7 @@
                         id="prompt" 
                         class="form-control" 
                         rows="3" 
-                        placeholder="Prompt opcional (o prompt padrão será usado se vazio)"
+                        placeholder="Digite aqui seu prompt personalizado para análise livre (deixe vazio para análise padrão estruturada)"
                     ></textarea>
                 
                     <button onclick="analyzeImages()">Analisar Imagens</button>
@@ -47,5 +53,6 @@
         </div>
     </div>
     <script src="scriptImagem.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>
