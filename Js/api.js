@@ -1,4 +1,3 @@
-import { ticketTemplate } from './templates/ticketTemplate.js';
 import { getSelectedTemplate } from './templates/templateManager.js';
 
 export const API_KEY = 'AIzaSyCrzVWf2E7g8xAF7Kw_BJ1MTVGPRCLbkfE';
