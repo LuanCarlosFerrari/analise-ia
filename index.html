@@ -21,11 +21,11 @@
         <div class="grid-container">
             
             <div class="left-panel">
-                <h1>Análise de Imagem</h1>
+                <h1>Análise de Documentos</h1>
                 <div class="input-area">
                     <div class="image-upload">
-                        <label for="imageInput">Selecione uma imagem:</label>
-                        <input type="file" id="imageInput" accept="image/*,.pdf" multiple>
+                        <label for="imageInput">Selecione um ou mais Documentos:</label>
+                        <input type="file" id="imageInput" accept="image/*,.pdf,.txt,.xlsx,.xls,.doc,.docx,.csv" multiple>
                         <div id="imagePreview" class="image-preview"></div>
                     </div>
 
@@ -37,7 +37,7 @@
                         placeholder="Digite aqui seu prompt personalizado para análise livre (deixe vazio para análise padrão estruturada)"
                     ></textarea>
                 
-                    <button onclick="analyzeImages()">Analisar Imagens</button>
+                    <button onclick="analyzeImages()">Analisar documentos</button>
                 </div>
             </div>
             
@@ -45,10 +45,10 @@
                 <h1>Resultado da Análise</h1>
                 <div id="result">
                     <div class="result-box">
-                        Nenhuma imagem analisada ainda.
+                        Nenhum documento analisado ainda.
                     </div>
                 </div>
-                <button id="exportButton" onclick="exportToExcel()" disabled>Exportar para Excel</button>
+                <button id="exportButton" onclick="exportToExcel()" disabled>Exportar relatorio no Excel</button>
             </div>
         </div>
     </div>

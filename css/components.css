@@ -160,11 +160,21 @@ button:disabled {
     background-color: var(--input-bg);
     border: 1px solid var(--border-color);
     border-radius: 4px;
-    padding: 10px;
     margin-top: 17px;
     margin-bottom: 15px;
-    min-height: 30px;
-    height: auto;
     overflow-y: auto;
     color: var(--text-primary);
+    white-space: pre-wrap;       /* Preserva quebras de linha e quebra palavras longas */
+    word-wrap: break-word;       /* Quebra palavras longas */
+    word-break: break-word;      /* Quebra palavras quando necessário */
+    max-width: 100%;            /* Garante que não ultrapasse a largura do container */
+}
+
+/* Adicione também para o conteúdo da análise */
+.analysis-content pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    word-break: break-word;
+    max-width: 100%;
+    padding: 5px;
 }

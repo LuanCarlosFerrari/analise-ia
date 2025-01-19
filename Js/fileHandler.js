@@ -20,7 +20,12 @@ export function initFileInput() {
         Array.from(files).forEach((file, index) => {
             const listItem = document.createElement('li');
             listItem.classList.add('file-item');
-            const fileType = file.type === 'application/pdf' ? '📄' : '🖼️';
+            const fileType = file.type === 'application/pdf' ? '📄' : 
+                             file.type === 'text/plain' ? '📝' :
+                             file.type.includes('excel') ? '📊' :
+                             file.type.includes('word') ? '📘' :
+                             file.type === 'text/csv' ? '📑' :
+                             '📄';
             listItem.textContent = `${index + 1}. ${fileType} ${file.name}`;
             fileList.appendChild(listItem);
         });
@@ -30,7 +35,7 @@ export function initFileInput() {
 export function getBase64(file) {
     return new Promise((resolve, reject) => {
         if (file.type === 'application/pdf') {
-            // Carregando o PDF.js dinamicamente
+            // Processamento existente para PDFs e imagens
             const pdfjsLib = window['pdfjs-dist/build/pdf'];
             if (!pdfjsLib) {
                 reject(new Error('PDF.js não foi carregado corretamente'));
@@ -66,7 +71,7 @@ export function getBase64(file) {
                     console.error('Erro ao processar PDF:', error);
                     reject(new Error('Erro ao processar o arquivo PDF'));
                 });
-        } else {
+        } else if (file.type.startsWith('image/')) {
             // Para imagens, mantém o código existente
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -78,6 +83,99 @@ export function getBase64(file) {
                 console.error('Erro ao ler arquivo:', error);
                 reject(error);
             };
+        } 
+        // Novo processamento para TXT e CSV
+        else if (file.type === 'text/plain' || file.type === 'text/csv') {
+            const reader = new FileReader();
+            reader.readAsText(file);
+            reader.onload = () => {
+                const text = reader.result;
+                // Converte texto para imagem usando canvas
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.width = 800;
+                canvas.height = 600;
+                context.fillStyle = 'white';
+                context.fillRect(0, 0, canvas.width, canvas.height);
+                context.font = '14px Arial';
+                context.fillStyle = 'black';
+                
+                const lines = text.split('\n');
+                lines.forEach((line, i) => {
+                    context.fillText(line, 10, 20 + (i * 20));
+                });
+                
+                const base64String = canvas.toDataURL('image/jpeg').split(',')[1];
+                resolve(base64String);
+            };
+            reader.onerror = reject;
+        }
+        // Novo processamento para Excel
+        else if (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || 
+                 file.type === 'application/vnd.ms-excel') {
+            const reader = new FileReader();
+            reader.readAsBinaryString(file);
+            reader.onload = () => {
+                const workbook = XLSX.read(reader.result, {type: 'binary'});
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const text = XLSX.utils.sheet_to_txt(firstSheet);
+                
+                // Converte texto para imagem usando canvas
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.width = 800;
+                canvas.height = 600;
+                context.fillStyle = 'white';
+                context.fillRect(0, 0, canvas.width, canvas.height);
+                context.font = '14px Arial';
+                context.fillStyle = 'black';
+                
+                const lines = text.split('\n');
+                lines.forEach((line, i) => {
+                    context.fillText(line, 10, 20 + (i * 20));
+                });
+                
+                const base64String = canvas.toDataURL('image/jpeg').split(',')[1];
+                resolve(base64String);
+            };
+            reader.onerror = reject;
+        }
+        // Novo processamento para Word
+        else if (file.type.includes('word')) {
+            // Para documentos Word, você precisará de uma biblioteca adicional
+            // como mammoth.js para converter DOCX para HTML
+            // Este é um exemplo simplificado
+            const reader = new FileReader();
+            reader.readAsArrayBuffer(file);
+            reader.onload = async () => {
+                try {
+                    // Você precisará adicionar a biblioteca mammoth.js ao seu projeto
+                    const result = await mammoth.extractRawText({arrayBuffer: reader.result});
+                    const text = result.value;
+                    
+                    // Converte texto para imagem usando canvas
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.width = 800;
+                    canvas.height = 600;
+                    context.fillStyle = 'white';
+                    context.fillRect(0, 0, canvas.width, canvas.height);
+                    context.font = '14px Arial';
+                    context.fillStyle = 'black';
+                    
+                    const lines = text.split('\n');
+                    lines.forEach((line, i) => {
+                        context.fillText(line, 10, 20 + (i * 20));
+                    });
+                    
+                    const base64String = canvas.toDataURL('image/jpeg').split(',')[1];
+                    resolve(base64String);
+                } catch (error) {
+                    reject(new Error('Erro ao processar arquivo Word'));
+                }
+            };
+        } else {
+            reject(new Error('Tipo de arquivo não suportado'));
         }
     });
 }
