@@ -136,7 +136,7 @@ button:disabled {
 
 .theme-toggle {
     position: fixed;
-    top: 20px;
+    top: 1px;
     right: 20px;
     width: 40px;
     height: 40px;
@@ -169,8 +169,6 @@ button:disabled {
     word-break: break-word;      /* Quebra palavras quando necessário */
     max-width: 100%;            /* Garante que não ultrapasse a largura do container */
 }
-
-/* Adicione também para o conteúdo da análise */
 .analysis-content pre {
     white-space: pre-wrap;
     word-wrap: break-word;
