@@ -1,4 +1,4 @@
-import { parseAnalysisToObject } from './utils.js';
+import { ticketTemplate } from './templates/ticketTemplate.js';
 import { showError } from './uiManager.js';
 
 export function exportToExcel() {
@@ -21,8 +21,8 @@ export function exportToExcel() {
     resultElements.forEach(element => {
         const fileName = element.querySelector('h3').textContent.replace('Arquivo: ', '');
         const analysisText = element.querySelector('.analysis-content pre').textContent;
-        const parsedData = parseAnalysisToObject(analysisText);
-        
+        const parsedData = ticketTemplate.parseToObject(analysisText);
+
         const row = {
             'Nome do Arquivo': fileName,
             'Nome da empresa': parsedData['Nome da empresa'],

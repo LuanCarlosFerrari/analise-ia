@@ -1,5 +1,6 @@
 import { analyzeWithGemini, analyzeWithCustomPrompt, basePrompt } from './api.js';
 import { showError, showLoading, showProgress, showResults, showSuccess } from './uiManager.js';
+import { ticketTemplate } from './templates/ticketTemplate.js';
 
 export function initFileInput() {
     document.getElementById('imageInput').addEventListener('change', function(e) {

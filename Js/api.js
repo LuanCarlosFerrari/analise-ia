@@ -1,24 +1,9 @@
-import { validateResponse, cleanResponse } from './utils.js';
+import { ticketTemplate } from './templates/ticketTemplate.js';
+export const basePrompt = ticketTemplate.prompt;
 
 export const API_KEY = 'AIzaSyCrzVWf2E7g8xAF7Kw_BJ1MTVGPRCLbkfE';
-export const RETRY_DELAY = 1000; 
+export const RETRY_DELAY = 1000;
 export const MAX_RETRIES = 3;
-
-export const basePrompt = `Você deve analisar esta imagem e retornar EXCLUSIVAMENTE estas informações no formato abaixo:
-
-Nome da empresa:
-Cnpj:
-Nota fiscal:
-Peso chegada:
-
-REGRAS OBRIGATÓRIAS:
-1. APENAS retorne os campos acima
-2. Se não encontrar a informação, deixe o campo vazio
-3. NÃO adicione campos extras
-4. NÃO adicione explicações ou comentários
-5. Mantenha exatamente este formato
-6. Para o campo "Nota fiscal", procure por variações como "nota fiscal" ou "invoice number", "n.f", "N.f", "Nf", "N.F.", "NF.", "Número da nota" ou "Nº da nota"
-7. Para o campo "Peso chegada", APENAS use valores que estejam explicitamente identificados como "", "peso liquido", "PESO LIQ". NÃO use valores de "peso de saída", "peso chegada"`;
 
 export async function analyzeWithGemini(imageBase64, prompt, retryCount = 0) {
     try {
@@ -73,8 +58,8 @@ export async function analyzeWithGemini(imageBase64, prompt, retryCount = 0) {
 
         let result = data.candidates[0].content.parts[0].text;
 
-        if (!validateResponse(result)) {
-            result = cleanResponse(result);
+        if (!ticketTemplate.validateResponse(result)) {
+            result = ticketTemplate.cleanResponse(result);
         }
 
         return result;

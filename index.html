@@ -37,7 +37,7 @@
                         placeholder="Digite aqui seu prompt personalizado para análise livre (deixe vazio para análise padrão estruturada)"
                     ></textarea>
                 
-                    <button onclick="analyzeImages()">Analisar documentos</button>
+                    <button id="analyzeButton" onclick="window.analyzeImages()">Analisar documentos</button>
                 </div>
             </div>
             
@@ -48,11 +48,10 @@
                         Nenhum documento analisado ainda.
                     </div>
                 </div>
-                <button id="exportButton" onclick="exportToExcel()" disabled>Exportar relatorio no Excel</button>
+                <button id="exportButton" onclick="window.exportToExcel()" disabled>Exportar relatorio no Excel</button>
             </div>
         </div>
     </div>
-    <script src="scriptImagem.js"></script>
     <script type="module" src="js/main.js"></script>
 </body>
 </html>
