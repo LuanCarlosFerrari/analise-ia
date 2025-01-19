@@ -1,5 +1,5 @@
 import { ticketTemplate } from './templates/ticketTemplate.js';
-export const basePrompt = ticketTemplate.prompt;
+import { getSelectedTemplate } from './templates/templateManager.js';
 
 export const API_KEY = 'AIzaSyCrzVWf2E7g8xAF7Kw_BJ1MTVGPRCLbkfE';
 export const RETRY_DELAY = 1000;
@@ -7,6 +7,8 @@ export const MAX_RETRIES = 3;
 
 export async function analyzeWithGemini(imageBase64, prompt, retryCount = 0) {
     try {
+        const selectedTemplate = getSelectedTemplate(); // Get the current template
+
         const requestBody = {
             contents: [{
                 parts: [{
@@ -58,8 +60,9 @@ export async function analyzeWithGemini(imageBase64, prompt, retryCount = 0) {
 
         let result = data.candidates[0].content.parts[0].text;
 
-        if (!ticketTemplate.validateResponse(result)) {
-            result = ticketTemplate.cleanResponse(result);
+        // Use the selected template's validation and cleaning methods
+        if (!selectedTemplate.validateResponse(result)) {
+            result = selectedTemplate.cleanResponse(result);
         }
 
         return result;

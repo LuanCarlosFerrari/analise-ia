@@ -1,6 +1,7 @@
-import { analyzeWithGemini, analyzeWithCustomPrompt, basePrompt } from './api.js';
+import { analyzeWithGemini, analyzeWithCustomPrompt } from './api.js';
 import { showError, showLoading, showProgress, showResults, showSuccess } from './uiManager.js';
 import { ticketTemplate } from './templates/ticketTemplate.js';
+import { getSelectedTemplate } from './templates/templateManager.js';
 
 export function initFileInput() {
     document.getElementById('imageInput').addEventListener('change', function(e) {
@@ -184,6 +185,7 @@ export function getBase64(file) {
 export async function analyzeImages() {
     const imageFiles = document.getElementById('imageInput').files;
     const customPrompt = document.getElementById('prompt').value;
+    const selectedTemplate = getSelectedTemplate();
     
     if (imageFiles.length === 0) {
         showError('Por favor, selecione pelo menos uma imagem.');
@@ -200,11 +202,9 @@ export async function analyzeImages() {
                 
                 let analysis;
                 if (customPrompt) {
-                    // Use free-form analysis with custom prompt
                     analysis = await analyzeWithCustomPrompt(imageBase64, customPrompt);
                 } else {
-                    // Use structured analysis with basePrompt
-                    analysis = await analyzeWithGemini(imageBase64, basePrompt);
+                    analysis = await analyzeWithGemini(imageBase64, selectedTemplate.prompt);
                 }
                 
                 results.push({

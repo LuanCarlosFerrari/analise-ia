@@ -1,39 +1,36 @@
-import { ticketTemplate } from './templates/ticketTemplate.js';
+import { getSelectedTemplate } from './templates/templateManager.js';
 import { showError } from './uiManager.js';
 
 export function exportToExcel() {
     const resultElements = document.querySelectorAll('.analysis-result');
+    const selectedTemplate = getSelectedTemplate();
+    
     if (resultElements.length === 0) {
         showError('Não há dados para exportar');
         return;
     }
 
     const data = [];
-    const columnWidths = {
-        'Nome do Arquivo': 0,
-        'Nome da empresa': 0,
-        'Cnpj': 0,
-        'Nota fiscal': 0,
-        'Peso chegada': 0
-    };
+    const columnWidths = {};
 
-    // Collect data and calculate max widths
+    // Initialize column widths with selected template fields
+    selectedTemplate.fields.forEach(field => {
+        columnWidths[field] = field.length;
+    });
+    columnWidths['Nome do Arquivo'] = 'Nome do Arquivo'.length;
+
     resultElements.forEach(element => {
         const fileName = element.querySelector('h3').textContent.replace('Arquivo: ', '');
         const analysisText = element.querySelector('.analysis-content pre').textContent;
-        const parsedData = ticketTemplate.parseToObject(analysisText);
+        const parsedData = selectedTemplate.parseToObject(analysisText);
 
         const row = {
             'Nome do Arquivo': fileName,
-            'Nome da empresa': parsedData['Nome da empresa'],
-            'Cnpj': parsedData['Cnpj'],
-            'Nota fiscal': parsedData['Nota fiscal'],
-            'Peso chegada': parsedData['Peso chegada']
+            ...parsedData
         };
 
-        // Update column widths
         Object.entries(row).forEach(([key, value]) => {
-            columnWidths[key] = Math.max(columnWidths[key], key.length, (value || '').length);
+            columnWidths[key] = Math.max(columnWidths[key], (value || '').length);
         });
 
         data.push(row);
@@ -42,11 +39,10 @@ export function exportToExcel() {
     const workbook = XLSX.utils.book_new();
     const worksheet = XLSX.utils.json_to_sheet(data);
 
-    // Set column widths
     worksheet['!cols'] = Object.values(columnWidths).map(width => ({
-        wch: width + 2 // Add some padding
+        wch: width + 2
     }));
 
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Análises');
-    XLSX.writeFile(workbook, 'analise_imagens.xlsx');
+    XLSX.writeFile(workbook, `analise_${selectedTemplate.name.toLowerCase()}.xlsx`);
 }
