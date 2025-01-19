@@ -17,7 +17,7 @@ REGRAS OBRIGATÓRIAS:
 3. NÃO adicione campos extras
 4. NÃO adicione explicações ou comentários
 5. Mantenha exatamente este formato
-6. Para o campo "Nota fiscal", procure por variações como "nota fiscal", "N.F", "NF", "N.F.", "NF.", "Número da nota" ou "Nº da nota"
+6. Para o campo "Nota fiscal", procure por variações como "nota fiscal" ou "invoice number", "n.f", "N.f", "Nf", "N.F.", "NF.", "Número da nota" ou "Nº da nota"
 7. Para o campo "Peso chegada", APENAS use valores que estejam explicitamente identificados como "", "peso liquido", "PESO LIQ". NÃO use valores de "peso de saída", "peso chegada"`;
 
 export async function analyzeWithGemini(imageBase64, prompt, retryCount = 0) {
