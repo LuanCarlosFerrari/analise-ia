@@ -17,12 +17,8 @@
     padding: 20px;
     position: relative;
     background-color: var(--panel-bg);
-    border: 1px solid var(--border-color);
 }
 
-.right-panel {
-    box-shadow: -2px 0 10px rgba(0,0,0,0.1);
-}
 
 /* Add these responsive styles */
 @media (max-width: 768px) {
