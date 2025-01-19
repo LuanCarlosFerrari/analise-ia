@@ -159,12 +159,12 @@ button:disabled {
 .result-box {
     background-color: var(--input-bg);
     border: 1px solid var(--border-color);
-    border-radius: 4px;
-    margin-top: 17px;
-    margin-bottom: 15px;
     overflow-y: auto;
-    color: var(--text-primary);
-    white-space: pre-wrap;       /* Preserva quebras de linha e quebra palavras longas */
+    padding: 10px;
+    margin-top: 16px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    text-align: left;
     word-wrap: break-word;       /* Quebra palavras longas */
     word-break: break-word;      /* Quebra palavras quando necessário */
     max-width: 100%;            /* Garante que não ultrapasse a largura do container */
