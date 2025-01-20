@@ -1,9 +1,11 @@
 import { invoiceTemplate } from './invoiceTemplate.js';
 import { ticketTemplate } from './ticketTemplate.js';
+import { checkTemplate } from './checkTemplate.js';
 
 export const templates = {
     invoice: invoiceTemplate,
-    ticket: ticketTemplate
+    ticket: ticketTemplate,
+    check: checkTemplate
 };
 
 export function getSelectedTemplate() {

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-br" data-theme="light">
+<html lang="pt-BR" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Análise de Imagem</title>
+    <title>Análise de documentos</title>
     <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.12.313/pdf.min.js"></script>
     <link rel="stylesheet" href="css/variables.css">
@@ -13,10 +13,15 @@
     <link rel="stylesheet" href="css/transitions.css">
     <link rel="stylesheet" href="css/utilities.css">
 </head>
-<body>
-    <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
-        <span class="theme-toggle-icon">🌞</span>
-    </button>
+<body translate="yes">
+    <div class="top-controls">
+        <button id="languageToggle" class="language-toggle" aria-label="Toggle language">
+            <span class="language-toggle-icon">🌐</span>
+        </button>
+        <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
+            <span class="theme-toggle-icon">🌞</span>
+        </button>
+    </div>
     <div class="container">
         <div class="grid-container">
             
@@ -34,6 +39,7 @@
                         <select id="templateSelect" class="form-control">
                             <option value="invoice">Nota Fiscal</option>
                             <option value="ticket">Ticket de Descarga</option>
+                            <option value="check">Cheque</option>
                         </select>
                     </div>
 
